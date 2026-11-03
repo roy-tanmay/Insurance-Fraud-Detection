@@ -3,6 +3,8 @@ from pathlib import Path
 # Path
 ROOT = Path(__file__).resolve().parents[2]
 RAW_CSV = ROOT / "data" / "fraud_oracle.csv"
+ARTIFACTS_DIR = ROOT / "artifacts"
+CLEANER_PARAMS_PATH = ARTIFACTS_DIR / "cleaner_params.json"
 
 # Data
 TARGET = "fraud_found_p"
