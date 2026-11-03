@@ -3,7 +3,7 @@ import re
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from insurance_fraud_detection.config import RAW_CSV, TARGET, SEED, TEST_SIZE, DROP_COLUMNS
+from insurance_fraud_detection.config import BIN_ORDERS, RAW_CSV, TARGET, SEED, TEST_SIZE, DROP_COLUMNS,  POOL_MAP
 
 def to_snake_case(name: str) -> str:
     """
@@ -78,4 +78,30 @@ def apply_cleaner(df: pd.DataFrame, params: dict) -> pd.DataFrame:
     """
     df = df.copy()
     df.loc[df["age"] == 0, "age"] = params["age"]
+    return df
+
+def apply_pooling(df: pd.DataFrame) -> pd.DataFrame:
+    """Fixed rule: merge sparse bins using POOL_MAP. Learns nothing."""
+    df = df.copy()
+    for col, mapping in POOL_MAP.items():
+        if col not in df.columns:
+            raise KeyError(f"Pooling column missing: {col}")
+        df[col] = df[col].map(lambda v: mapping.get(v, v)) # type: ignore
+    return df
+
+def map_ordinal( df: pd.DataFrame,
+                bin_orders: dict[str, list[str]] = BIN_ORDERS,
+                ) -> pd.DataFrame:
+    """
+    Fixed rule: map ordered bin labels to integer codes. Raises on unseen labels.
+    """
+
+    df = df.copy()
+    for col, order in bin_orders.items():
+        codes = {label: i for i, label in enumerate(order)}
+        mapped = df[col].map(codes)
+        unseen = df.loc[mapped.isna(), col].unique()
+        if len(unseen) > 0:
+            raise ValueError(f"Unseen labels in '{col}': {list(unseen)}")
+        df[col] = mapped.astype(int)
     return df
