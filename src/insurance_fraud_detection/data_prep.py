@@ -1,9 +1,9 @@
+from pathlib import Path
 import re
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 
-from insurance_fraud_detection.config import RAW_CSV, TARGET, SEED, TEST_SIZE
+from insurance_fraud_detection.config import RAW_CSV, TARGET, SEED, TEST_SIZE, DROP_COLUMNS
 
 def to_snake_case(name: str) -> str:
     """
@@ -12,25 +12,70 @@ def to_snake_case(name: str) -> str:
     name = re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
     return re.sub(r"_+", "_", name)
 
-def load_data(path= RAW_CSV) -> pd.DataFrame:
+
+def drop_unnecessary_columns(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Load the raw CSV data and convert column names to snake_case.
+    Drop columns that are not useful for model training.
+    Raises KeyError if any name in DROP_COLUMNS is missing.
+    """
+    return df.drop(columns=DROP_COLUMNS)
+
+
+
+def load_data(path: Path = RAW_CSV) -> pd.DataFrame:
+    """
+    Load the raw CSV, convert column names to snake_case, drop unused columns.
     """
     try:
         df = pd.read_csv(path)
     except FileNotFoundError:
         raise FileNotFoundError(
-            f"Data File not found at {path}."
-            "Download fraud_oracle.csv into the data/ folder.")
+            f"Data file not found at {path}. "
+            "Download fraud_oracle.csv into the data/ folder."
+        ) from None
+
     df.columns = [to_snake_case(col) for col in df.columns]
-    return df
+
+    if TARGET not in df.columns:
+        raise ValueError(
+            f"Target column '{TARGET}' not found. Columns: {list(df.columns)}"
+        )
+
+    return drop_unnecessary_columns(df)
+
 
 def split_data(df: pd.DataFrame):
     """
-    Split the data into training and testing sets.
+    Stratified train/test split. Returns two dataframes (target kept as a column)
     """
+    if TARGET not in df.columns:
+        raise ValueError(f"Target column '{TARGET}' not found.")
+    
     return train_test_split(
         df, test_size=TEST_SIZE, random_state=SEED, stratify=df[TARGET]
     )
 
- 
+
+def drop_bad_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Remove rows with the invalid '0' string in month_claimed
+    (the same row also has '0' in day_of_week_claimed).
+    """
+    return df[df["month_claimed"] != "0"].copy()
+
+
+def fit_cleaner(train_df: pd.DataFrame) -> dict: 
+    """
+    Learn cleaning parameters from the training set only.
+    """
+    age_median = float(train_df.loc[train_df["age"] > 0, "age"].median())
+    return {"age": age_median}
+
+
+def apply_cleaner(df: pd.DataFrame, params: dict) -> pd.DataFrame:
+    """
+    Apply cleaning parameters to a dataframe.
+    """
+    df = df.copy()
+    df.loc[df["age"] == 0, "age"] = params["age"]
+    return df
