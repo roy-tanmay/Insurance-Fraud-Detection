@@ -30,10 +30,15 @@ def apply_cleaner(df: pd.DataFrame, params: dict) -> pd.DataFrame:
     df.loc[df["age"] == 0, "age"] = params["age"]
     return df
 
-def apply_pooling(df: pd.DataFrame) -> pd.DataFrame:
-    """Fixed rule: merge sparse bins using POOL_MAP. Learns nothing."""
+
+def apply_pooling(df: pd.DataFrame,
+                  pool_map: dict[str, dict[str, str]] = POOL_MAP,
+                ) -> pd.DataFrame:
+    """
+    Fixed rule: merge sparse bins using pool_map. Learns nothing.
+    """
     df = df.copy()
-    for col, mapping in POOL_MAP.items():
+    for col, mapping in pool_map.items():
         if col not in df.columns:
             raise KeyError(f"Pooling column missing: {col}")
         df[col] = df[col].map(lambda v: mapping.get(v, v)) # type: ignore
