@@ -5,7 +5,8 @@ from sklearn.utils.validation import check_is_fitted
 
 
 class WOEEncoder(BaseEstimator, TransformerMixin):
-    """Weight of evidence encoder with IV-based column selection.
+    """
+    Weight of evidence encoder with IV-based column selection.
 
     WOE = ln(share of all frauds in the bin / share of all non-frauds in the bin).
     A positive value means the bin is riskier than average.
@@ -17,8 +18,9 @@ class WOEEncoder(BaseEstimator, TransformerMixin):
     ----------
     cols : columns to encode (treated as categories).
     alpha : smoothing added to each bin's counts, so a bin with zero
-        frauds does not give an infinite WOE. Use 0 to switch it off.
+            frauds does not give an infinite WOE. Use 0 to switch it off.
     min_iv : columns whose IV is below this are dropped in transform().
+
     """
 
     def __init__(self, cols: list[str], alpha: float = 0.5, min_iv: float = 0.0):

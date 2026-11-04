@@ -63,3 +63,19 @@ BIN_ORDERS = {
                       "40000 to 69000", "more than 69000"],
     "past_number_of_claims": ["none", "1", "2 to 4", "more than 4"],
 }
+
+SELECTED_COLS = [
+    "base_policy",
+    "fault",
+    "make",
+    "past_number_of_claims",
+    "address_change_claim",
+    "deductible",
+    "vehicle_price",
+    "month",
+    "month_claimed",
+    "age_of_policy_holder",
+    "number_of_suppliments",
+    "agent_type",
+    "age_of_vehicle",
+]
