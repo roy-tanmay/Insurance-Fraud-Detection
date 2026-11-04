@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.metrics import average_precision_score, roc_auc_score
+from sklearn.metrics import average_precision_score, roc_auc_score, roc_curve
 
 
 def top_frac_capture(y_true, scores, frac: float = 0.10) -> int:
@@ -12,13 +12,17 @@ def top_frac_capture(y_true, scores, frac: float = 0.10) -> int:
 
 
 def score_report(y_true, scores, frac: float = 0.10) -> dict:
-    """PR-AUC, ROC-AUC, top-frac capture and lift."""
+    """PR-AUC, ROC-AUC, Gini, KS, top-frac capture and lift."""
     y_true = np.asarray(y_true)
     caught = top_frac_capture(y_true, scores, frac)
     total = int(y_true.sum())
+    roc = float(roc_auc_score(y_true, scores))
+    fpr, tpr, _ = roc_curve(y_true, scores)
     return {
         "pr_auc": float(average_precision_score(y_true, scores)),
-        "roc_auc": float(roc_auc_score(y_true, scores)),
+        "roc_auc": roc,
+        "gini": 2 * roc - 1,
+        "ks": float(np.max(tpr - fpr)),
         "top_caught": caught,
         "total_fraud": total,
         "lift": (caught / total) / frac,
