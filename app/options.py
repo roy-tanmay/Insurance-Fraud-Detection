@@ -1,0 +1,15 @@
+OPTIONS = {
+    'base_policy': ['Collision', 'Liability', 'All Perils'],
+    'fault': ['Policy Holder', 'Third Party'],
+    'make': ['Pontiac', 'Toyota', 'Honda', 'Mazda', 'Chevrolet', 'Accura', 'Ford', 'VW', 'Dodge', 'Saab', 'Mercury', 'Saturn', 'Nisson', 'BMW', 'Jaguar', 'Porche', 'Mecedes', 'Ferrari', 'Lexus'],
+    'past_number_of_claims': ['2 to 4', 'none', '1', 'more than 4'],
+    'address_change_claim': ['no change', '4 to 8 years', '2 to 3 years', '1 year', 'under 6 months'],
+    'deductible': [300, 400, 500, 700],
+    'vehicle_price': ['20000 to 29000', '30000 to 39000', 'more than 69000', 'less than 20000', '40000 to 59000', '60000 to 69000'],
+    'month': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    'month_claimed': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    'age_of_policy_holder': ['31 to 35', '36 to 40', '41 to 50', '51 to 65', '26 to 30', 'over 65', '16 to 17', '21 to 25', '18 to 20'],
+    'number_of_suppliments': ['none', 'more than 5', '1 to 2', '3 to 5'],
+    'agent_type': ['External', 'Internal'],
+    'age_of_vehicle': ['7 years', 'more than 7', '6 years', '5 years', 'new', '4 years', '3 years', '2 years'],
+}

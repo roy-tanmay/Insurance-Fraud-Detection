@@ -47,4 +47,4 @@ def predict_one(claim: dict) -> dict:
     raw = pd.DataFrame([{**DEFAULTS, **claim}]).drop(columns=[TARGET], errors="ignore")
     X = prepare(raw, params)[SELECTED_COLS]
     score = float(pipe.predict_proba(X)[:, 1][0])
-    return {"score": score, "flag": score >= cutoff}
+    return {"score": score, "flag": score >= cutoff, "cutoff": float(cutoff)}
